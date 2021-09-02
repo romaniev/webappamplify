@@ -4,8 +4,38 @@ import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 import { listNotes } from './graphql/queries';
 import { createNote as createNoteMutation, deleteNote as deleteNoteMutation } from './graphql/mutations';
 import { API, Storage } from 'aws-amplify';
+import Home from './Pages/Home/Home';
 
 const initialFormState = { name: '', description: '' }
+
+
+
+
+class App extends React.Component{
+  state={
+    isLog:false
+  }
+
+  handleLogin = (isLog) => this.setState({isLog})
+  render(){
+    const {isLog} = this.state;
+    return(
+      <div>
+        <Switch>
+          {
+            !isLog ?
+            <Route exact path='/' render={() => <Login isLogin={this.handleLogin}/>}/>
+              :
+            <Route path='/' render={() =><Home handleLogged={this.handleLogin}/> }/>
+          }
+        <Route path='*' component={NoMatch}/>
+        </Switch>
+      </div>
+    )
+  }
+}
+
+
 
 function App() {
   const [notes, setNotes] = useState([]);
@@ -14,6 +44,9 @@ function App() {
   useEffect(() => {
     fetchNotes();
   }, []);
+
+
+
 
   async function onChange(e) {
     if (!e.target.files[0]) return
